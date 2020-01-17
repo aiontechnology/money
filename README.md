@@ -1,2 +1,2 @@
-# money
-Java code to deal with money
+# Money
+Java library to deal with money.
