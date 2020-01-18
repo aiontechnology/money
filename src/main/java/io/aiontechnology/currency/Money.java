@@ -1,6 +1,8 @@
 package io.aiontechnology.currency;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Currency;
 
 /**
@@ -62,17 +64,63 @@ public class Money {
     }
 
     /**
-     * Multiply the given Money object with this Money and return a new one representing their product. Currently the
-     * both Money objects must be the same currency. In the future, currency conversion will be supported.
+     * Add the given Money object to this Money and return a new one representing the sum. Currently both
+     * Money objects must have the same currency. In the future, currency conversion will be supported.
+     *
+     * @param operand
+     * @return
+     */
+    public Money add(Money operand) {
+        assertCurrency(operand);
+        return new Money(value.add(operand.value), currency);
+    }
+
+    /**
+     * Subtract the given Money object from this Money and return a new one representing the remainder. Currently both
+     * Money objects must have the same currency. In the future, currency conversion will be supported.
+     *
+     * @param operand
+     * @return
+     */
+    public Money substract(Money operand) {
+        assertCurrency(operand);
+        return new Money(value.subtract(operand.value), currency);
+    }
+
+    /**
+     * Multiply the given Money object with this Money and return a new one representing their product. Currently both
+     * Money objects must have the same currency. In the future, currency conversion will be supported.
      *
      * @param operand The value to multiple the current money object to.
      * @return The resulting Money object
      */
     public Money multiply(Money operand) {
-        if (currency != operand.currency) {
-            throw new IllegalStateException("Can't do that yet");
+        assertCurrency(operand);
+        return new Money(value.multiply(operand.value, new MathContext(4, RoundingMode.HALF_UP)), currency);
+    }
+
+    /**
+     * Divide the given Money object by this Money and return a new one representing their quotient. Currently both
+     * Money objects must have the same currency. In the future, currency conversion will be supported.
+     *
+     * @param operand The value to multiple the current money object to.
+     * @return The resulting Money object
+     */
+    public Money divide(Money operand) {
+        assertCurrency(operand);
+        return new Money(value.divide(operand.value, new MathContext(4, RoundingMode.HALF_UP)), currency);
+    }
+
+    /**
+     * Utility method that checks the currency of this object to ensure that it is the same as the currency of the
+     * passed in money object. If not, an exception is thrown.
+     *
+     * @param money The money object to compare against.
+     */
+    private void assertCurrency(Money money) {
+        if (currency != money.currency) {
+            throw new IllegalStateException("Currencies do not match");
         }
-        return new Money(value.multiply(operand.value), currency);
     }
 
     /**
